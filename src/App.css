@@ -1,6 +1,3 @@
-
-.App {
-/* Base styles remain the same */
 body {
   margin: 0;
   font-family: 'Roboto', sans-serif;
@@ -39,25 +36,13 @@ body {
   border-radius: 8px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
 .react-calendar__tile--active {
   background-color: #007acc !important; /* Bright blue for selected date */
   color: white !important;
 }
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
 .react-calendar__tile:hover {
   background-color: #d0f0fd; /* Light blue hover effect */
 }
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
 .current-date {
   border: 2px solid #28a745 !important; /* Green border for today */
   border-radius: 50%;
@@ -66,14 +51,11 @@ body {
 .highlight {
   background-color: #fdd835 !important; /* Light yellow for event dates */
 }
-
 .event-form {
   margin: 20px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
 }
 
 .event-form input,
@@ -101,15 +83,12 @@ body {
   cursor: pointer;
   transition: 0.3s;
 }
-
 .event-form button:hover {
   background-color: #005b99; /* Slightly darker blue on hover */
 }
-
 .event-list {
   margin-top: 30px;
 }
-
 .event-item {
   display: flex;
   justify-content: space-between;
@@ -160,8 +139,6 @@ body {
   margin-bottom: 15px;
 }
 
-.App-link {
-  color: #61dafb;
 .color-box {
   width: 30px;
   height: 30px;
@@ -172,13 +149,6 @@ body {
   transition: 0.3s;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 .color-box.selected {
   border: 2px solid black;
 }
