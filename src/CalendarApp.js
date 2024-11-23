@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -10,17 +9,24 @@ const App = () => {
   const [eventTitle, setEventTitle] = useState('');
   const [eventDescription, setEventDescription] = useState('');
   const [eventColor, setEventColor] = useState('#007acc'); // Default color
+  const [editingEvent, setEditingEvent] = useState(null); // Event currently being edited
 
-  // Predefined colors for events
   const colorOptions = ['#007acc', '#28a745', '#ffc107', '#dc3545', '#6f42c1', '#20c997'];
 
   useEffect(() => {
     const savedEvents = JSON.parse(localStorage.getItem('events')) || [];
-    setEvents(savedEvents);
+    const today = new Date().setHours(0, 0, 0, 0);
+    const filteredEvents = savedEvents.filter(
+      (event) => new Date(event.date).setHours(0, 0, 0, 0) >= today
+    );
+
+    setEvents(filteredEvents);
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('events', JSON.stringify(events));
+    const sortedEvents = [...events].sort((a, b) => new Date(a.date) - new Date(b.date));
+    setEvents(sortedEvents);
+    localStorage.setItem('events', JSON.stringify(sortedEvents));
   }, [events]);
 
   const addEvent = () => {
@@ -30,17 +36,33 @@ const App = () => {
     }
 
     const newEvent = {
-      id: Date.now(),
+      id: editingEvent ? editingEvent.id : Date.now(),
       title: eventTitle,
       description: eventDescription,
       date: selectedDate.toISOString(),
       color: eventColor,
     };
 
-    setEvents([...events, newEvent]);
+    if (editingEvent) {
+      setEvents((prevEvents) =>
+        prevEvents.map((event) => (event.id === editingEvent.id ? newEvent : event))
+      );
+      setEditingEvent(null);
+    } else {
+      setEvents([...events, newEvent]);
+    }
+
     setEventTitle('');
     setEventDescription('');
     setEventColor('#007acc'); // Reset to default color
+  };
+
+  const startEditingEvent = (event) => {
+    setEditingEvent(event);
+    setEventTitle(event.title);
+    setEventDescription(event.description);
+    setEventColor(event.color);
+    setSelectedDate(new Date(event.date));
   };
 
   const deleteEvent = (id) => {
@@ -102,11 +124,11 @@ const App = () => {
             />
           ))}
         </div>
-        <button onClick={addEvent}>Add Event</button>
+        <button onClick={addEvent}>{editingEvent ? 'Save Changes' : 'Add Event'}</button>
       </div>
       <div className="event-list">
         {events.map((event) => (
-          <div key={event.id} className="event-item" style={{ borderColor: event.color }}>
+          <div key={event.id} className={`event-item ${event.date === new Date().toLocaleDateString() ? 'today' : ''}`} style={{ borderColor: event.color }}>
             <div>
               <h3 style={{ color: event.color }}>{event.title}</h3>
               <p>{event.description}</p>
@@ -117,9 +139,12 @@ const App = () => {
                 Days Left: {calculateDaysLeft(event.date)} days
               </p>
             </div>
-            <button className="delete-button" onClick={() => deleteEvent(event.id)}>
-              Delete
-            </button>
+            <div className="event-actions">
+              <button className="edit-button" onClick={() => startEditingEvent(event)}>Edit</button>
+              <button className="delete-button" onClick={() => deleteEvent(event.id)}>
+                Delete
+              </button>
+            </div>
           </div>
         ))}
       </div>

@@ -40,9 +40,11 @@ body {
   background-color: #007acc !important; /* Bright blue for selected date */
   color: white !important;
 }
+
 .react-calendar__tile:hover {
   background-color: #d0f0fd; /* Light blue hover effect */
 }
+
 .current-date {
   border: 2px solid #28a745 !important; /* Green border for today */
   border-radius: 50%;
@@ -51,6 +53,8 @@ body {
 .highlight {
   background-color: #fdd835 !important; /* Light yellow for event dates */
 }
+
+/* Event Form */
 .event-form {
   margin: 20px 0;
   display: flex;
@@ -83,38 +87,140 @@ body {
   cursor: pointer;
   transition: 0.3s;
 }
+
 .event-form button:hover {
   background-color: #005b99; /* Slightly darker blue on hover */
 }
+
+/* Event List */
+/* Event List Container */
 .event-list {
   margin-top: 30px;
-}
-.event-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #ffffff; /* White background for events */
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 15px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Responsive grid */
+  gap: 20px; /* Space between events */
+  justify-content: center;
 }
 
+/* Event Item (Card) */
+.event-item {
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff; /* White background for each event */
+  padding: 20px;
+  border-radius: 12px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.event-item:hover {
+  transform: translateY(-5px); /* Slight lift effect */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); /* Larger shadow on hover */
+}
+
+/* Event Title */
 .event-item h3 {
   margin: 0;
   font-size: 1.5rem; /* Larger title */
   color: #2c3e50; /* Dark blue-gray */
+  font-weight: bold;
+  text-transform: uppercase; /* Optional: adds a more structured look */
 }
 
+/* Event Description */
 .event-item p {
-  margin: 5px 0;
+  margin: 10px 0;
   font-size: 1rem;
   color: #555;
+  line-height: 1.4;
 }
 
+/* Event Date */
 .event-item .event-date {
   font-size: 0.9rem;
   color: #777;
+  margin-bottom: 10px;
+}
+
+/* Days Left */
+.event-item .event-days-left {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #e74c3c; /* Red for urgency */
+}
+
+/* Event Actions (Edit and Delete Buttons) */
+.event-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  justify-content: space-between;
+}
+
+.edit-button,
+.delete-button {
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.edit-button {
+  background-color: #ffc107; /* Yellow */
+  color: #2c3e50;
+}
+
+.edit-button:hover {
+  background-color: #e0a800; /* Darker yellow on hover */
+}
+
+.delete-button {
+  background-color: #dc3545; /* Red */
+  color: white;
+}
+
+.delete-button:hover {
+  background-color: #b71c1c; /* Darker red on hover */
+}
+
+/* Highlighted Event (Color Border) */
+.event-item.selectedDate {
+  border-left: 5px solid #28a745; /* Green border for selected date */
+}
+
+.event-item.today {
+  border-left: 5px solid #dc3545; /* Red border for today */
+  font-weight: bold;
+  color: #343a40;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+  .event-list {
+    grid-template-columns: 1fr; /* Stack events on smaller screens */
+  }
+}
+
+/* Event Actions */
+.event-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.edit-button {
+  background-color: #ffc107; /* Bright yellow for edit button */
+  color: #2c3e50; /* Dark blue-gray for contrast */
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: 0.3s;
+}
+
+.edit-button:hover {
+  background-color: #e0a800; /* Darker yellow on hover */
 }
 
 .delete-button {
@@ -154,15 +260,41 @@ body {
 }
 
 /* Dynamic Tile Colors */
-.highlight-007acc { background-color: #007acc !important; color: white !important; }
-.highlight-28a745 { background-color: #28a745 !important; color: white !important; }
-.highlight-ffc107 { background-color: #ffc107 !important; color: black !important; }
-.highlight-dc3545 { background-color: #dc3545 !important; color: white !important; }
-.highlight-6f42c1 { background-color: #6f42c1 !important; color: white !important; }
-.highlight-20c997 { background-color: #20c997 !important; color: white !important; }
+.highlight-007acc {
+  background-color: #007acc !important;
+  color: white !important;
+}
+.highlight-28a745 {
+  background-color: #28a745 !important;
+  color: white !important;
+}
+.highlight-ffc107 {
+  background-color: #ffc107 !important;
+  color: black !important;
+}
+.highlight-dc3545 {
+  background-color: #dc3545 !important;
+  color: white !important;
+}
+.highlight-6f42c1 {
+  background-color: #6f42c1 !important;
+  color: white !important;
+}
+.highlight-20c997 {
+  background-color: #20c997 !important;
+  color: white !important;
+}
 
 /* Current Date Highlight */
 .current-date {
   border: 2px solid #28a745 !important;
   border-radius: 50%;
+}
+/*Footer*/
+.footer-text {
+  text-align: center;
+  color: #007acc; /* Matching color with the calendar */
+  font-family: 'Arial', sans-serif; /* Or any font you prefer */
+  font-size: 1.2rem;
+  margin-top: 20px;
 }
