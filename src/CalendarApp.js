@@ -1,119 +1,61 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Modal,
-  TextInput,
-  ScrollView,
-  Alert,
-} from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Icon from "react-native-vector-icons/Feather";
 
 const CalendarApp = () => {
   const [events, setEvents] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [isEditModalVisible, setEditModalVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
   const [newEventTitle, setNewEventTitle] = useState("");
   const [newEventDescription, setNewEventDescription] = useState("");
-  const [newEventColor, setNewEventColor] = useState("");
+  const [newEventColor, setNewEventColor] = useState("#7fdfff");
   const [editingEvent, setEditingEvent] = useState(null);
-  const [colors] = useState(["#ff7f7f", "#ffd27f", "#7fff7f", "#7fdfff", "#d27fff", "#ff7fd2"]);
+  const colors = ["#ff7f7f", "#ffd27f", "#7fff7f", "#7fdfff", "#d27fff", "#ff7fd2"];
 
-  // Load events from AsyncStorage
+  // Load events from localStorage
   useEffect(() => {
-    const loadEvents = async () => {
-      try {
-        const storedEvents = await AsyncStorage.getItem("calendarEvents");
-        if (storedEvents) {
-          const parsedEvents = JSON.parse(storedEvents).map((event) => ({
-            ...event,
-            date: new Date(event.date),
-          }));
-          setEvents(parsedEvents);
-        }
-      } catch (error) {
-        console.error("Failed to load events", error);
-        Alert.alert("Error", "Could not load events");
-      }
-    };
-
-    loadEvents();
+    const storedEvents = JSON.parse(localStorage.getItem("calendarEvents")) || [];
+    setEvents(storedEvents);
   }, []);
 
-  // Remove past events on app load
+  // Save events to localStorage
   useEffect(() => {
-    removePastEvents();
+    localStorage.setItem("calendarEvents", JSON.stringify(events));
   }, [events]);
 
-  // Save events to AsyncStorage
-  const saveEvents = async (updatedEvents) => {
-    try {
-      await AsyncStorage.setItem("calendarEvents", JSON.stringify(updatedEvents));
-    } catch (error) {
-      console.error("Failed to save events", error);
-      Alert.alert("Error", "Could not save events");
-    }
-  };
-
   const addEvent = () => {
-    if (!newEventTitle.trim()) {
-      Alert.alert("Error", "Event title is required");
-      return;
-    }
+    if (!newEventTitle.trim()) return alert("Event title is required!");
 
     const newEvent = {
       id: Date.now(),
       title: newEventTitle,
       description: newEventDescription,
       date: selectedDate,
-      color: newEventColor || "#7fdfff", // Default color
+      color: newEventColor,
     };
 
-    const updatedEvents = [...events, newEvent].sort(
-      (a, b) => new Date(a.date) - new Date(b.date)
-    );
+    const updatedEvents = [...events, newEvent].sort((a, b) => new Date(a.date) - new Date(b.date));
     setEvents(updatedEvents);
-    saveEvents(updatedEvents);
-
-    // Reset modal state
     setNewEventTitle("");
     setNewEventDescription("");
-    setNewEventColor("");
-    setModalVisible(false);
+    setNewEventColor("#7fdfff");
   };
 
   const editEvent = () => {
-    if (!newEventTitle.trim()) {
-      Alert.alert("Error", "Event title is required");
-      return;
-    }
-
     const updatedEvents = events.map((event) =>
       event.id === editingEvent.id
-        ? { ...editingEvent, title: newEventTitle, description: newEventDescription, color: newEventColor || event.color }
+        ? { ...editingEvent, title: newEventTitle, description: newEventDescription, color: newEventColor }
         : event
     );
-    setEvents(updatedEvents);
-    saveEvents(updatedEvents);
 
+    setEvents(updatedEvents);
     setEditingEvent(null);
     setNewEventTitle("");
     setNewEventDescription("");
-    setNewEventColor("");
-    setEditModalVisible(false);
+    setNewEventColor("#7fdfff");
   };
 
   const removePastEvents = () => {
-    const today = new Date().setHours(0, 0, 0, 0);
-    const filteredEvents = events.filter((event) => new Date(event.date).setHours(0, 0, 0, 0) >= today);
-    if (filteredEvents.length !== events.length) {
-      setEvents(filteredEvents);
-      saveEvents(filteredEvents);
-    }
+    const today = new Date().toISOString().split("T")[0];
+    const filteredEvents = events.filter((event) => event.date >= today);
+    setEvents(filteredEvents);
   };
 
   const startEditing = (event) => {
@@ -121,132 +63,60 @@ const CalendarApp = () => {
     setNewEventTitle(event.title);
     setNewEventDescription(event.description);
     setNewEventColor(event.color);
-    setEditModalVisible(true);
   };
 
-  const renderCalendar = () => {
-    return (
-      <View style={styles.calendar}>
-        <Text style={styles.monthYear}>
-          {selectedDate.toLocaleString("default", { month: "long", year: "numeric" })}
-        </Text>
-        {/* Add your date rendering logic here */}
-      </View>
-    );
+  const calculateDaysLeft = (eventDate) => {
+    const diff = new Date(eventDate) - new Date();
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Calendar App</Text>
-      {renderCalendar()}
+    <div className="calendar-app">
+      <h1>Calendar App</h1>
+      <div className="calendar">
+        <label>Select Date: </label>
+        <input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} />
+      </div>
 
-      <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)}>
-        <Icon name="plus" size={24} color="white" />
-      </TouchableOpacity>
+      <div className="event-form">
+        <input
+          type="text"
+          placeholder="Event Title"
+          value={newEventTitle}
+          onChange={(e) => setNewEventTitle(e.target.value)}
+        />
+        <textarea
+          placeholder="Description (Optional)"
+          value={newEventDescription}
+          onChange={(e) => setNewEventDescription(e.target.value)}
+        ></textarea>
+        <div className="color-picker">
+          {colors.map((color) => (
+            <button
+              key={color}
+              style={{ backgroundColor: color, border: color === newEventColor ? "3px solid black" : "none" }}
+              onClick={() => setNewEventColor(color)}
+            ></button>
+          ))}
+        </div>
+        <button onClick={editingEvent ? editEvent : addEvent}>
+          {editingEvent ? "Save Changes" : "Add Event"}
+        </button>
+      </div>
 
-      <Modal visible={isModalVisible} transparent={true} animationType="slide">
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <TextInput
-              placeholder="Event Title"
-              value={newEventTitle}
-              onChangeText={setNewEventTitle}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="Description (Optional)"
-              value={newEventDescription}
-              onChangeText={setNewEventDescription}
-              style={styles.input}
-              multiline
-            />
-            <View style={styles.colorPicker}>
-              {colors.map((color) => (
-                <TouchableOpacity
-                  key={color}
-                  style={[styles.colorOption, { backgroundColor: color }]}
-                  onPress={() => setNewEventColor(color)}
-                />
-              ))}
-            </View>
-            <View style={styles.modalButtons}>
-              <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.cancelButton}>
-                <Text>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={addEvent} style={styles.saveButton}>
-                <Text style={styles.saveButtonText}>Save</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      <Modal visible={isEditModalVisible} transparent={true} animationType="slide">
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <TextInput
-              placeholder="Event Title"
-              value={newEventTitle}
-              onChangeText={setNewEventTitle}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="Description (Optional)"
-              value={newEventDescription}
-              onChangeText={setNewEventDescription}
-              style={styles.input}
-              multiline
-            />
-            <View style={styles.colorPicker}>
-              {colors.map((color) => (
-                <TouchableOpacity
-                  key={color}
-                  style={[styles.colorOption, { backgroundColor: color }]}
-                  onPress={() => setNewEventColor(color)}
-                />
-              ))}
-            </View>
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                onPress={() => setEditModalVisible(false)}
-                style={styles.cancelButton}
-              >
-                <Text>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={editEvent} style={styles.saveButton}>
-                <Text style={styles.saveButtonText}>Save</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      <ScrollView>
+      <div className="events-list">
         {events.map((event) => (
-          <View key={event.id} style={[styles.eventItem, { borderLeftColor: event.color }]}>
-            <View>
-              <Text style={styles.eventTitle}>{event.title}</Text>
-              <Text style={styles.eventDate}>
-                {event.date.toLocaleDateString()} | {Math.ceil((event.date - new Date()) / (1000 * 60 * 60 * 24))} days left
-              </Text>
-            </View>
-            <View style={styles.eventActions}>
-              <TouchableOpacity onPress={() => startEditing(event)}>
-                <Icon name="edit" size={20} color="blue" />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => setEvents(events.filter((e) => e.id !== event.id))}>
-                <Icon name="trash-2" size={20} color="red" />
-              </TouchableOpacity>
-            </View>
-          </View>
+          <div key={event.id} className="event-item" style={{ borderLeft: `5px solid ${event.color}` }}>
+            <h3>{event.title}</h3>
+            <p>{event.description}</p>
+            <p>{event.date} - {calculateDaysLeft(event.date)} days left</p>
+            <button onClick={() => startEditing(event)}>Edit</button>
+            <button onClick={() => setEvents(events.filter((e) => e.id !== event.id))}>Delete</button>
+          </div>
         ))}
-      </ScrollView>
-    </View>
+      </div>
+    </div>
   );
 };
-
-const styles = StyleSheet.create({
-  // Add relevant styles here
-});
 
 export default CalendarApp;
