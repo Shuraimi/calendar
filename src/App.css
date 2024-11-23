@@ -1,183 +1,198 @@
 
-/* Base styles */
+.App {
+/* Base styles remain the same */
 body {
-  font-family: "Montserrat", sans-serif;
   margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  background-color: #f8f9fa;
+  font-family: 'Roboto', sans-serif;
+  background-color: #f0f8ff; /* Light sky blue background */
 }
 
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.app-container {
+  text-align: center;
   padding: 20px;
 }
 
-.title {
-  font-family: "Rozha One", serif;
-  font-size: 36px;
+.app-heading {
+  font-size: 2.5rem;
+  color: #2c3e50; /* Dark blue-gray */
   margin-bottom: 20px;
-  color: #343a40;
 }
 
-.calendar {
+.calendar-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: center;
   margin-bottom: 30px;
 }
 
-.monthYear {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.addButton {
-  background-color: #007bff;
+.react-calendar {
   border: none;
-  color: white;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-}
-
-.addButton:hover {
-  background-color: #0056b3;
-}
-
-/* Event List */
-.eventItem {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: white;
-  margin: 10px 0;
-  padding: 15px;
-  border-left: 6px solid #007bff;
-  border-radius: 8px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.eventTitle {
-  font-size: 18px;
-  font-weight: bold;
-  color: #212529;
-}
-
-.eventDate {
-  font-size: 14px;
-  color: #6c757d;
-}
-
-.eventActions {
-  display: flex;
-  gap: 10px;
-}
-
-/* Modal Styles */
-.modalContainer {
-  position: fixed;
-  top: 0;
-  left: 0;
   width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modalContent {
-  background-color: white;
-  width: 90%;
-  max-width: 400px;
+  max-width: 500px;
+  background-color: #ffffff; /* White background for the calendar */
   border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.input {
-  width: 100%;
+.react-calendar__tile {
+  text-align: center;
   padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ced4da;
-  border-radius: 5px;
-  font-size: 16px;
+  border-radius: 8px;
 }
 
-.colorPicker {
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+.react-calendar__tile--active {
+  background-color: #007acc !important; /* Bright blue for selected date */
+  color: white !important;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+.react-calendar__tile:hover {
+  background-color: #d0f0fd; /* Light blue hover effect */
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+.current-date {
+  border: 2px solid #28a745 !important; /* Green border for today */
+  border-radius: 50%;
+}
+
+.highlight {
+  background-color: #fdd835 !important; /* Light yellow for event dates */
+}
+
+.event-form {
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+}
+
+.event-form input,
+.event-form textarea {
+  padding: 10px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  width: 320px;
+  font-size: 1rem;
+}
+
+.event-form textarea {
+  height: 100px;
+  resize: none;
+}
+
+.event-form button {
+  padding: 10px 25px;
+  background-color: #007acc; /* Bright blue button */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.event-form button:hover {
+  background-color: #005b99; /* Slightly darker blue on hover */
+}
+
+.event-list {
+  margin-top: 30px;
+}
+
+.event-item {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff; /* White background for events */
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.event-item h3 {
+  margin: 0;
+  font-size: 1.5rem; /* Larger title */
+  color: #2c3e50; /* Dark blue-gray */
+}
+
+.event-item p {
+  margin: 5px 0;
+  font-size: 1rem;
+  color: #555;
+}
+
+.event-item .event-date {
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.delete-button {
+  background-color: #dc3545; /* Bright red for delete button */
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: 0.3s;
+}
+
+.delete-button:hover {
+  background-color: #b71c1c; /* Darker red on hover */
+}
+
+/* Color Picker Styles */
+.color-picker {
+  display: flex;
+  justify-content: center;
   margin-bottom: 15px;
 }
 
-.colorOption {
+.App-link {
+  color: #61dafb;
+.color-box {
   width: 30px;
   height: 30px;
+  margin: 0 5px;
   border-radius: 50%;
-  border: 2px solid #ced4da;
   cursor: pointer;
+  border: 2px solid transparent;
+  transition: 0.3s;
 }
 
-.colorOption:hover {
-  transform: scale(1.1);
-  border-color: #007bff;
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+.color-box.selected {
+  border: 2px solid black;
 }
 
-.modalButtons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
+/* Dynamic Tile Colors */
+.highlight-007acc { background-color: #007acc !important; color: white !important; }
+.highlight-28a745 { background-color: #28a745 !important; color: white !important; }
+.highlight-ffc107 { background-color: #ffc107 !important; color: black !important; }
+.highlight-dc3545 { background-color: #dc3545 !important; color: white !important; }
+.highlight-6f42c1 { background-color: #6f42c1 !important; color: white !important; }
+.highlight-20c997 { background-color: #20c997 !important; color: white !important; }
 
-.cancelButton {
-  background-color: #6c757d;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.cancelButton:hover {
-  background-color: #5a6268;
-}
-
-.saveButton {
-  background-color: #007bff;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.saveButton:hover {
-  background-color: #0056b3;
-}
-
-.saveButtonText {
-  font-weight: bold;
-}
-
-/* Additional Styles */
-.eventItem.selectedDate {
-  border-left-color: #28a745;
-}
-
-.eventItem.today {
-  border-left-color: #dc3545;
-  font-weight: bold;
-  color: #343a40;
+/* Current Date Highlight */
+.current-date {
+  border: 2px solid #28a745 !important;
+  border-radius: 50%;
 }
