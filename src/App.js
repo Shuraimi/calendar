@@ -7,7 +7,9 @@ function App() {
   return (
     <div>
       <CalendarApp />
+    <footer>
       <p className="footer-text">Made by Shuraim</p>
+    </footer>
     </div>
   );
 }
