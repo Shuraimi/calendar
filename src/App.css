@@ -301,4 +301,5 @@ body {
   font-size: 18px;
   font-weight: 500;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  text-align:center;
 }
