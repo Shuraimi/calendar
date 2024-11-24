@@ -5,7 +5,10 @@ import './App.css';
 
 const App = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState(() => {
+    const savedEvents = JSON.parse(localStorage.getItem('events')) || [];
+    return savedEvents.sort((a, b) => new Date(a.date) - new Date(b.date)); // Ensure sorted order
+  });
   const [eventTitle, setEventTitle] = useState('');
   const [eventDescription, setEventDescription] = useState('');
   const [eventColor, setEventColor] = useState('#007acc'); // Default color
@@ -13,20 +16,9 @@ const App = () => {
 
   const colorOptions = ['#007acc', '#28a745', '#ffc107', '#dc3545', '#6f42c1', '#20c997'];
 
+  // Save events to localStorage whenever the events array changes
   useEffect(() => {
-    const savedEvents = JSON.parse(localStorage.getItem('events')) || [];
-    const today = new Date().setHours(0, 0, 0, 0);
-    const filteredEvents = savedEvents.filter(
-      (event) => new Date(event.date).setHours(0, 0, 0, 0) >= today
-    );
-
-    setEvents(filteredEvents);
-  }, []);
-
-  useEffect(() => {
-    const sortedEvents = [...events].sort((a, b) => new Date(a.date) - new Date(b.date));
-    setEvents(sortedEvents);
-    localStorage.setItem('events', JSON.stringify(sortedEvents));
+    localStorage.setItem('events', JSON.stringify(events));
   }, [events]);
 
   const addEvent = () => {
@@ -49,7 +41,7 @@ const App = () => {
       );
       setEditingEvent(null);
     } else {
-      setEvents([...events, newEvent]);
+      setEvents([...events, newEvent].sort((a, b) => new Date(a.date) - new Date(b.date)));
     }
 
     setEventTitle('');
