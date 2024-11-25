@@ -16,9 +16,15 @@ const App = () => {
 
   const colorOptions = ['#007acc', '#28a745', '#ffc107', '#dc3545', '#6f42c1', '#20c997'];
 
-  // Save events to localStorage whenever the events array changes
+  // Filter expired events on load and whenever `events` changes
   useEffect(() => {
-    localStorage.setItem('events', JSON.stringify(events));
+    const today = new Date().setHours(0, 0, 0, 0);
+    const filteredEvents = events.filter(
+      (event) => new Date(event.date).setHours(0, 0, 0, 0) >= today
+    );
+
+    setEvents(filteredEvents); // Remove expired events
+    localStorage.setItem('events', JSON.stringify(filteredEvents));
   }, [events]);
 
   const addEvent = () => {
