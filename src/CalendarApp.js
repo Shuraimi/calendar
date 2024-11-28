@@ -1,30 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './App.css';
 
 const App = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [events, setEvents] = useState(() => {
-    const savedEvents = JSON.parse(localStorage.getItem('events')) || [];
-    return savedEvents.sort((a, b) => new Date(a.date) - new Date(b.date)); // Ensure sorted order
-  });
+  const [events, setEvents] = useState([]);
   const [eventTitle, setEventTitle] = useState('');
   const [eventDescription, setEventDescription] = useState('');
   const [eventColor, setEventColor] = useState('#007acc'); // Default color
   const [editingEvent, setEditingEvent] = useState(null); // Event currently being edited
 
+  const formRef = useRef(null); // Reference to the event form
+
   const colorOptions = ['#007acc', '#28a745', '#ffc107', '#dc3545', '#6f42c1', '#20c997'];
 
-  // Filter expired events on load and whenever `events` changes
   useEffect(() => {
+    const savedEvents = JSON.parse(localStorage.getItem('events')) || [];
     const today = new Date().setHours(0, 0, 0, 0);
-    const filteredEvents = events.filter(
+    const filteredEvents = savedEvents.filter(
       (event) => new Date(event.date).setHours(0, 0, 0, 0) >= today
     );
 
-    setEvents(filteredEvents); // Remove expired events
-    localStorage.setItem('events', JSON.stringify(filteredEvents));
+    setEvents(filteredEvents);
+  }, []);
+
+  useEffect(() => {
+    const sortedEvents = [...events].sort((a, b) => new Date(a.date) - new Date(b.date));
+    localStorage.setItem('events', JSON.stringify(sortedEvents));
+    setEvents(sortedEvents);
   }, [events]);
 
   const addEvent = () => {
@@ -47,7 +51,7 @@ const App = () => {
       );
       setEditingEvent(null);
     } else {
-      setEvents([...events, newEvent].sort((a, b) => new Date(a.date) - new Date(b.date)));
+      setEvents([...events, newEvent]);
     }
 
     setEventTitle('');
@@ -61,6 +65,9 @@ const App = () => {
     setEventDescription(event.description);
     setEventColor(event.color);
     setSelectedDate(new Date(event.date));
+
+    // Scroll to the form section
+    formRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const deleteEvent = (id) => {
@@ -100,7 +107,7 @@ const App = () => {
           }}
         />
       </div>
-      <div className="event-form">
+      <div className="event-form" ref={formRef}>
         <input
           type="text"
           placeholder="Event Title"
@@ -126,7 +133,11 @@ const App = () => {
       </div>
       <div className="event-list">
         {events.map((event) => (
-          <div key={event.id} className={`event-item ${event.date === new Date().toLocaleDateString() ? 'today' : ''}`} style={{ borderColor: event.color }}>
+          <div
+            key={event.id}
+            className={`event-item ${event.date === new Date().toLocaleDateString() ? 'today' : ''}`}
+            style={{ borderColor: event.color }}
+          >
             <div>
               <h3 style={{ color: event.color }}>{event.title}</h3>
               <p>{event.description}</p>
@@ -138,7 +149,9 @@ const App = () => {
               </p>
             </div>
             <div className="event-actions">
-              <button className="edit-button" onClick={() => startEditingEvent(event)}>Edit</button>
+              <button className="edit-button" onClick={() => startEditingEvent(event)}>
+                Edit
+              </button>
               <button className="delete-button" onClick={() => deleteEvent(event.id)}>
                 Delete
               </button>
